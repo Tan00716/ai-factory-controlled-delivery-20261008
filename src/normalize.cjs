@@ -1,1 +1,2 @@
-exports.normalize = (tags) => tags.map((tag) => tag.toLowerCase());
+exports.normalize = (tags) =>
+  [...new Set(tags.map((tag) => tag.trim().toLowerCase()).filter((tag) => tag !== ''))].sort();
