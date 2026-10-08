@@ -1,0 +1,6 @@
+{
+  "name": "public-synthetic-tags-cli",
+  "private": true,
+  "version": "1.0.0",
+  "description": "PUBLIC_SYNTHETIC multi-file bug fixture; no dependencies or scripts"
+}
