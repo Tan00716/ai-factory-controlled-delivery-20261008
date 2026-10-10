@@ -2,7 +2,7 @@
   "title": "公开合成标签统计 CLI",
   "goal": "修复多文件标签 CLI：读取 JSON 对象 tags 字符串数组，trim 与 toLowerCase，删除空标签、去重、按 JavaScript 字符串默认排序，输出 JSON 对象 tags 和去重后的 count，无换行。非法 JSON、非对象、缺少或非数组 tags、非字符串元素必须 exit 2、stderr INVALID_INPUT 换行、无 stdout。仅授权两个 src 文件。",
   "criteria": [
-    "规范化所有字符串标签：trim 与 toLowerCase，删除空标签，保留内部空格及 Unicode。",
+    "规范化所有字符串标签：trim、toLowerCase 后按 Unicode NFC 规范化，删除空标签，保留内部空格与字符本身；组合字符序列与对应预组合字符视为同一标签。",
     "去重并按 JavaScript 默认字符串排序，输出准确 tags 和 count；空数组返回 tags=[] count=0，无输出换行。",
     "非法 JSON、非对象、缺少或非数组 tags、非字符串元素拒绝：exit 2，stderr INVALID_INPUT 换行，stdout 空；只修改授权两个源文件。"
   ],
@@ -217,10 +217,36 @@
         "expected": "",
         "exitCode": 2,
         "stderr": "INVALID_INPUT\n"
+      },
+      {
+        "key": "nfc-compose",
+        "ac": 0,
+        "input": "{\"tags\":[\"Cafe\\u0301\",\"caf\\u00e9\"]}",
+        "expected": "{\"tags\":[\"café\"],\"count\":1}",
+        "exitCode": 0,
+        "stderr": ""
+      },
+      {
+        "key": "nfc-upper",
+        "ac": 0,
+        "input": "{\"tags\":[\" CAFE\\u0301 \",\"Caf\\u00e9\"]}",
+        "expected": "{\"tags\":[\"café\"],\"count\":1}",
+        "exitCode": 0,
+        "stderr": ""
+      },
+      {
+        "key": "nfc-sort",
+        "ac": 1,
+        "input": "{\"tags\":[\"e\\u0301\",\"f\",\"e\"]}",
+        "expected": "{\"tags\":[\"e\",\"f\",\"é\"],\"count\":3}",
+        "exitCode": 0,
+        "stderr": ""
       }
     ],
     "testAuthority": "HUMAN_SEALED_ORACLE",
-    "actions": ["NODE_ENTRYPOINT_STDIN"],
+    "actions": [
+      "NODE_ENTRYPOINT_STDIN"
+    ],
     "nodeVersion": "24.12.0",
     "maxOutputBytes": 16384,
     "commandTimeoutMs": 3000,
